@@ -12,11 +12,11 @@ Contributions:
 
 ## OpenShift URL:
 
-
+https://group23-group23-v3.apps.kube.eecs.qmul.ac.uk/
 
 ## Username/Password Admin:
 User: admin
-Pass: admin
+Pass: user1234
 
 ## Username/Password Users:
 
@@ -34,5 +34,7 @@ User: joseph
 Pass: user1234
 User: arthur
 Pass: user1234
+
+##
 
 

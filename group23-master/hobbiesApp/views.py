@@ -328,7 +328,7 @@ def search(request):
         username=request.user)  # user currently logged in
     users = []
     jsonbody = json.loads(request.body)
-    city = jsonbody['city']
+    city = jsonbody['city'].capitalize()
     minAge = age_to_dob(
         int(jsonbody['maxage'])) if jsonbody['maxage'] != '' else datetime.date(1500, 1, 1)
     maxAge = age_to_dob(
@@ -365,6 +365,5 @@ def search(request):
     })
 
 
-@login_required(login_url='login')
 def age_to_dob(dob):
     return datetime.date.today() - datetime.timedelta(days=(dob*365)+365)

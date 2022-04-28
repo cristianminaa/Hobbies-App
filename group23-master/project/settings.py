@@ -142,3 +142,4 @@ INTERNAL_IPS = ['127.0.0.1']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 MEDIA_URL = '/images/'
+CSRF_TRUSTED_ORIGINS = ['https://group23-group23-v3.apps.kube.eecs.qmul.ac.uk']

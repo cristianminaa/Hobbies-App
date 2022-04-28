@@ -1,0 +1,222 @@
+{% extends 'hobbiesApp/base.html'%}
+
+{%block content%}
+
+<h5 class="card-title">
+    <div class="text-center">
+        {% csrf_token %}
+    </div>
+</h5>
+
+
+<div class="card" style='text-align: center;' id="similarHobbiesPage">
+    <div class="card-body">
+        <table class="table table-hover table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col" @click="filterByName()">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            style="margin-bottom: 57%;">Name</button>
+                    </th>
+                    <th scope="col">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" style="margin-bottom: 4%;"
+                            @click="filterByCity()">City</button>
+                        <input class=" form-control" id="city" name="city" type="text" placeholder="Search..."
+                            @change="filterbycityage()">
+                    </th>
+                    <th scope="col">
+                        <button type=" button" class="btn btn-outline-secondary btn-sm" style="margin-bottom: 4%; "
+                            @click="filterByAge()">Age</button>
+                        <div class="container" style="margin-left: 15%;">
+                            <div class="row row-cols-auto">
+                                <div class="col">
+                                    <input class="form-control" id="minAge" name="minAge" type="text" placeholder="Min"
+                                        @change="filterbycityage()" style="width: 60px; margin-left: 20%;">
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" id="maxAge" name="maxAge" type="text" placeholder="Max"
+                                        @change="filterbycityage()" style="width: 60px;">
+                                </div>
+                            </div>
+                        </div>
+                        </span>
+                    </th>
+                    <th scope="col" @click="filterByHobbies()">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            style="margin-bottom: 27.5%;">Similar Hobbies</button>
+                    </th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="myTable">
+                <tr v-for="(user, index) in users">
+                    <td>
+                        [[ user.username ]]
+                    </td>
+                    <td>
+                        [[ user.city ]]
+                    </td>
+                    <td>
+                        [[ user.age ]]
+                    </td>
+                    <td>
+                        [[ similar_hobbies[index] ]]
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-primary" @click="addfriend(user)">Add
+                            Friend</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    var similarHobbiesPage = new Vue({
+        delimiters: ["[[", "]]"],
+        el: "#similarHobbiesPage",
+        data() {
+            return {
+                users: [],
+                similar_hobbies: [],
+            }
+        },
+        async created() {
+            let response_hobbies = await fetch("{% url 'similar hobbies api' %}", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+            });
+            if (response_hobbies.ok) {
+                let data = await response_hobbies.json();
+                this.users = data.users;
+                console.log(this.users);
+                this.similar_hobbies = data.similar_hobbies;
+            }
+            else {
+                alert("Failed to load similar hobbies");
+                console.log(data)
+            }
+        },
+        methods: {
+            async filterByCity() {
+                let response_users = await fetch("{% url 'filter by city api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_users.ok) {
+                    let data = await response_users.json();
+                    this.users = data.users;
+                    this.similar_hobbies = data.similar_hobbies;
+                }
+                else {
+                    alert("Failed to load similar users");
+                    console.log(data)
+                }
+            },
+            async filterByName() {
+                let response_users = await fetch("{% url 'filter by username api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_users.ok) {
+                    let data = await response_users.json();
+                    this.users = data.users;
+                    this.similar_hobbies = data.similar_hobbies;
+                }
+                else {
+                    alert("Failed to load similar users");
+                    console.log(data);
+                }
+            },
+            async filterByAge() {
+                let response_users = await fetch("{% url 'filter by age api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_users.ok) {
+                    let data = await response_users.json();
+                    this.users = data.users;
+                    this.similar_hobbies = data.similar_hobbies;
+                }
+                else {
+                    alert("Failed to load similar users");
+                    console.log(data);
+                }
+            },
+            async filterByHobbies() {
+                let response_hobbies = await fetch("{% url 'similar hobbies api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_hobbies.ok) {
+                    let data = await response_hobbies.json();
+                    this.users = data.users;
+                    console.log(this.users);
+                    this.similar_hobbies = data.similar_hobbies;
+                }
+                else {
+                    alert("Failed to load similar hobbies");
+                    console.log(data)
+                }
+            },
+            async filterbycityage() {
+                let response_names = await fetch("{% url 'search' %}", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                    body: JSON.stringify({
+                        'city': (document.getElementById('city').value).toLowerCase(),
+                        'minage': document.getElementById('minAge').value,
+                        'maxage': document.getElementById('maxAge').value,
+                    }),
+                });
+                if (response_names.ok) {
+                    let data = await response_names.json();
+                    this.users = data.users;
+                    console.log(this.users);
+                    this.similar_hobbies = data.similar_hobbies;
+                    console.log(this.similar_hobbies);
+                }
+                else {
+                    console.log(document.getElementById('city').value);
+                    console.log(document.getElementById('minAge').value);
+                    console.log(document.getElementById('maxAge').value);
+                }
+            },
+            async addfriend(user) {
+                let response = await fetch("{% url 'send friend request' %}", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                    body: JSON.stringify({
+                        'userID': user.id,
+                    }),
+                });
+                if (response.ok) {
+                    console.log(`Friend request sent to ${user.id}`);
+                    alert(`Friend request sent to ${user.id}`);
+                }
+            }
+        }
+    });
+</script>
+{% endblock scripts%}
+
+
+{% endblock content%}

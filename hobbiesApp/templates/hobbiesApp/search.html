@@ -1,0 +1,36 @@
+{% extends 'hobbiesApp/base.html'%}
+
+{%block content%}
+
+<h5 class="card-title">
+    <div class="text-center">
+        {% csrf_token %}
+        <div>
+            <input class="form-control mr-sm-2" type="search" placeholder="Search users" aria-label="Search">
+        </div>
+    </div>
+</h5>
+<hr>
+
+
+<div class="card" style='text-align: center;' id="userPage">
+
+    <div class="card-body">
+    </div>
+</div>
+
+{%block scripts%}
+<script>
+    var searchPage = new Vue({
+        delimiters: ["[[", "]]"],
+        el: "#searchPage",
+        data() {
+            return {
+                users: [],
+            }
+        },
+        async created() { }
+    });
+</script>
+{% endblock scripts%}
+{% endblock content%}

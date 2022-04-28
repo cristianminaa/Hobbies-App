@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+    body {
+      background-color: rgba(131, 131, 131, 0.466);
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+      background-attachment: scroll;
+      width: 20%;
+      height: 20%;
+
+    }
+  </style>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#" style='color:blue; font-family:Pacifico;'>YourHobbies</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profilePage' %}">Profile/Select Hobbies </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'hobbiesPage' %}">Add Hobbies</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link " href="{% url 'similarHobbies' %}">Similar Hobbies</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        
+        <a href="{% url 'logout'%}">Logout</a>
+      </form>
+    </div>
+  </nav>
+</head>
+<br>
+
+<body>
+  <div class="card" style='width:60%;margin-left:20%; min-height:500px;'>
+    <div class="card-header" style='text-align: center;'>
+      {% if request.get_full_path == '/profile/' %}
+      YOUR PROFILE
+
+      {%elif request.get_full_path == '/hobbies/' %}
+      HOBBIES
+
+      {%elif request.get_full_path == '/commonhobbies/' %}
+
+      COMMON HOBBIES
+
+      {% elif request.get_full_path == '/search/' %}
+      SEARCH USERS
+
+
+      {% elif request.get_full_path == '/similarHobbies/' %}
+      Similar Hobbies
+
+      {% endif %}
+    </div>
+    <div class="card-body">
+
+      {%block content%}
+      {% block scripts %}
+      {% endblock scripts %}
+      {%endblock content%}
+
+    </div>
+  </div>
+</body>
+
+</html>

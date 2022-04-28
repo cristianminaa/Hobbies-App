@@ -1,0 +1,274 @@
+{% extends 'hobbiesApp/base.html'%}
+{%block content%}
+
+
+<h5 class="card-title">
+    <div class="text-center">
+        {%if user.image.url%}
+            <img class="card-img-top" src="{{user.image.url}}" alt="image should show here">
+        {%else%}
+            hello
+        {%endif%}    
+    
+    </div>
+</h5>
+
+
+
+<div class="card" style='text-align: center;' id="userPage">
+
+    <div class="card-body">
+        {% csrf_token %}
+        <p>
+            <span style='font-size: 22px;'>[[ user.username ]],</span>
+            <small>[[ age ]]</small>
+        </p>
+        <input v-if="editing" type="text" v-model="email" />
+        <p v-else style='margin-top:-20px;'><small>( [[ email ]] )</small></p>
+        <input v-if="editing" type="text" v-model="city" />
+        <input v-if="editing" type="text" v-model="dob" placeholder="YYYY-MM-DD" />
+        <small v-else>I am from [[ city ]] and was born on [[ dob ]]</small>
+        <hr>
+        <p><h5 style='font-family:Pacifico; color:blue;'>My Hobbies</h5></p>
+        <div v-if="editing">
+            <p>
+                Hold CTRL/CMD to select multiple hobbies
+            </p>
+            <b-form-select v-model="selectedhobbies" :options="allhobbies" multiple>
+            </b-form-select>
+            <div class="mt-3">Selected: <strong>[[ selectedhobbies ]]</strong></div>
+        </div>
+        <div v-else v-for="hobby in hobbies">[[ hobby ]]</div>
+        <hr>
+        <p><h5 style='font-family:Pacifico; color:blue;'>My Friends</h5></p>
+        <div v-for="friend in friends">[[ friend ]]</div>
+        <hr>
+        <p><h5 style='font-family:Pacifico; color:blue;'>Friend Requests</h5></p>
+        <div v-if="requests != ''">
+            <table class="table table-hover table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            Wants to be friends
+                        </th>
+                        <th scope="col">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    <tr v-for="request in requests">
+                        <td>
+                            [[request.from_user.username ]]
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-primary"
+                                @click="acceptfriend(request)">Accept</button>
+                            <button v-if="" type="button" class="btn btn-danger"
+                                @click="deleterequest(request)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button v-if="!editing" type="button" class="btn btn-primary" @click="editing = true">EDIT PROFILE/SELECT HOBBIES</button>
+    <button v-else @click="editUser(user, email, city, dob, selectedhobbies, image); editing = false"
+        class="btn btn-sm btn-success">SAVE</button>
+</div>
+
+{% block scripts %}
+<script>
+    var userPage = new Vue({
+        delimiters: ["[[", "]]"],
+        el: "#userPage",
+        data() {
+            return {
+                user: "",
+                city: "",
+                age: "",
+                image: "",
+                email: "",
+                dob: "",
+                editing: "",
+                requests: [],
+                hobbies: [],
+                friends: [],
+                allhobbies: [],
+                selectedhobbies: [],
+            }
+        },
+        async created() {
+            let response_user = await fetch("{% url 'user api' %}", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+            });
+            if (response_user.ok) {
+                let data = await response_user.json();
+                this.user = data.user;
+                this.city = data.user.city;
+                this.age = data.user.age;
+                this.image = data.user.image;
+                this.email = data.user.email;
+                this.dob = data.user.dob;
+                this.editing = data.user.editing;
+                this.hobbies = data.user.hobbies;
+                this.friends = data.user.friends;
+            }
+            else {
+                alert("Failed to load user");
+                console.log(data)
+            }
+            let response_hobbies = await fetch("{% url 'hobbies api' %}", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+            });
+            if (response_hobbies.ok) {
+                let data2 = await response_hobbies.json();
+                this.allhobbies = data2.hobbies;
+            }
+            else {
+                alert("Failed to load hobbies")
+            }
+            let response_requests = await fetch("{% url 'friend request api' %}", {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+            });
+            if (response_requests.ok) {
+                let data3 = await response_requests.json();
+                this.requests = data3.requests;
+            }
+            else {
+                alert("Failed to load friend requests");
+            }
+        },
+        methods: {
+            async editUser(user, email, city, dob, hobbies, image) {
+                let response = await fetch(user.api, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        email: email,
+                        city: city,
+                        dob: dob,
+                        hobbies: hobbies,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response.ok) {
+                    this.getuser();
+                }
+                else {
+                    alert(`Failed to edit user ${user.username}!`);
+                }
+            },
+            async getuser() {
+                let response_user = await fetch("{% url 'user api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_user.ok) {
+                    let data = await response_user.json();
+                    this.user = data.user;
+                    this.city = data.user.city;
+                    this.age = data.user.age;
+                    this.image = data.user.image;
+                    this.email = data.user.email;
+                    this.dob = data.user.dob;
+                    this.editing = data.user.editing;
+                    this.hobbies = data.user.hobbies;
+                }
+                else {
+                    alert("Failed to load user");
+                }
+            },
+            async acceptfriend(request) {
+                let response_user = await fetch("{% url 'accept friend request' %}", {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        'from_user': request.from_user.id,
+                        'to_user': request.to_user.id,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_user.ok) {
+                    console.log(`${request.from_user.username}'s' friend request accepted`)
+                    this.updateview();
+                }
+                else {
+                    console.log(request);
+                    console.log(request.from_user);
+                    console.log(request.to_user);
+                    alert("Failed to accept friend request");
+                }
+            },
+            async deleterequest(request) {
+                let response_user = await fetch("{% url 'accept friend request' %}", {
+                    method: "DELETE",
+                    body: JSON.stringify({
+                        'from_user': request.from_user.id,
+                        'to_user': request.to_user.id,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_user.ok) {
+                    console.log(`${request.from_user.username}'s' friend request deleted`)
+                    this.updateview();
+                }
+                else {
+                    console.log(request);
+                    console.log(request.from_user);
+                    console.log(request.to_user);
+                    alert("Failed to delete friend request");
+                }
+            },
+            async updateview() {
+                let response_requests2 = await fetch("{% url 'friend request api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_requests2.ok) {
+                    let data4 = await response_requests2.json();
+                    this.requests = data4.requests;
+                }
+                else {
+                    alert("Failed to load friend requests1");
+                }
+
+                let response_user = await fetch("{% url 'user api' %}", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                });
+                if (response_user.ok) {
+                    let data = await response_user.json();
+                    this.friends = data.user.friends;
+                }
+                else {
+                    alert("Failed to load requests2");
+                }
+            },
+        }
+    });
+</script>
+{% endblock scripts%}
+{% endblock content%}

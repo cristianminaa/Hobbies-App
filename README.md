@@ -1,16 +1,15 @@
-## Group Members:
+## App Overview:
 
-1. Cristian-Daniel Mina - 180374939 - ec18403
-Contributions:
-- Profile Page and Similar Hobbies Page (Frontend + Backend)
-2. Muhammad Azaan Zafar - 180311945 - ec19042
-Contributions:
-- Login & Register (Backend), Profile Page (Frotnend + Backend), Add Hobbies (Frontend + Backend)
-3. Saeed Kaddoura - 180413135 - bt18673
-Contributions:
-- Similar Hobbies (Backend) and Unit Tests
+Django & Vue.js Hobbies app:
+- Users can register and input various information
+- Users can select their hobbies
+- Users can add friends
+- Users can view other users based on how many hobbies they have in common
+- Users can search for other users and filter based on name or age
 
 ## OpenShift URL:
+
+You can see the deployed app at:
 
 https://group23-group23-v3.apps.kube.eecs.qmul.ac.uk/
 
